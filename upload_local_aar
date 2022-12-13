@@ -1,0 +1,36 @@
+apply plugin: 'maven-publish'
+
+def localAarFile = rootProject.file('xxx.aar')
+
+def GROUP_THIRD_PARTY = "xxx"
+def ArtifactId = "xxx"
+def uname = ""
+def upwd = ""
+def localFile = rootProject.file('local.properties')
+if (localFile.exists() && localFile.length() > 0) {
+    Properties localProperties = new Properties()
+    localProperties.load(new FileInputStream(localFile))
+    uname = localProperties.getOrDefault("nexus.uname", "")
+    upwd = localProperties.getOrDefault("nexus.upwd", "")
+}
+
+publishing {
+    repositories { RepositoryHandler repoHandler ->
+        repoHandler.maven {
+            url ue_upload_url
+            credentials {
+                username uname
+                password upwd
+            }
+            allowInsecureProtocol true
+        }
+    }
+    publications {
+        localAar(MavenPublication) {
+            artifact localAarFile
+            version = "1.0.0-SNAPSHOT"
+            artifactId = ArtifactId
+            groupId = GROUP_THIRD_PARTY
+        }
+    }
+}
